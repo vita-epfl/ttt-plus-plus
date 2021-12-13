@@ -1,0 +1,9 @@
+colorama==0.4.4
+tqdm==4.58.0
+matplotlib==3.4.1
+pandas==1.2.4
+seaborn==0.11.1
+sklearn
+torch
+torchvision
+gdown
