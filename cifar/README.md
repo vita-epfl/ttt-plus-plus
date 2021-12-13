@@ -63,13 +63,13 @@ The scripts above yield the following results (classification errors) on the Cif
 
 ### Batch-queue Decoupling
 
-To run our test-time algorithms with a dynamic queue for moment estimate, set the <queue-size> larger than the <batch-size>:
+To run our test-time algorithms with a dynamic queue for moment estimate, set the `queue size` larger than the `batch size`:
 
 ```bash
 bash scripts/run_ttt++_cifar100.sh <domain> <method> <batch-size> <queue-size>
 ```
 
-For instance, the line below is to run the test-time feature alignment on the Cifar100-C under the snow corruption, with a batch size of 128 and a sample size of 1024. 
+For instance, the line below is to run the test-time feature alignment on the Cifar100-C under the snow corruption, with a batch size of 128 and a queue size of 1024. 
 ```bash
 bash scripts/run_ttt++_cifar100.sh snow align 128 1024
 ```
