@@ -15,7 +15,7 @@ def parse_arguments():
     parser.add_argument('--rot', default=50, type=float)
     parser.add_argument('--tran', default=1.0, type=float)
     parser.add_argument('--sep', default=-0.5, type=float)
-    parser.add_argument('--figdir', default=None, type=str)
+    parser.add_argument('--figdir', default='docs', type=str)
     parser.add_argument('--compare_tent_shot', default=True, type=str)
     args = parser.parse_args()
     return args
@@ -125,7 +125,7 @@ def run_experiment(rot, tran, sep, figdir=None, seed=2021):
         result[5] = acc
 
         if figdir:
-            # net.load_state_dict(net_state, strict=True)
+            net.load_state_dict(net_state, strict=True)
             visualize.plot_prediction(input_t, label_t, net, 3, os.path.join(figdir, 'target_tent.png'))
 
         # Shot
@@ -136,7 +136,7 @@ def run_experiment(rot, tran, sep, figdir=None, seed=2021):
         result[6] = acc
 
         if figdir:
-            # net.load_state_dict(net_state, strict=True)
+            net.load_state_dict(net_state, strict=True)
             visualize.plot_prediction(input_t, label_t, net, 3, os.path.join(figdir, 'target_shot.png'))
     print("Elapsed: {:.2f}s".format(time.time() - start))
     return result

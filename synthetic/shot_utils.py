@@ -40,8 +40,8 @@ def Entropy(input_):
 
 def configure_model(net):
     classifier = net.cls
-    ssh = net.ssh
+    # ssh = net.ssh
     for name, param in classifier.named_parameters():
         param.requires_grad = False
-    for name, param in ssh.named_parameters():
-        param.requires_grad = False
+    # for name, param in ssh.named_parameters():
+        # param.requires_grad = False
