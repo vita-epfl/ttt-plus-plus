@@ -3,7 +3,9 @@ import copy
 import torch
 from torch import optim
 from torch import nn
-
+import tent
+from shot_utils import Entropy
+from shot_utils import obtain_shot_label
 from discrepancy import covariance, coral, linear_mmd
 
 
@@ -46,7 +48,7 @@ def summarize(z):
     return mu, sigma
 
 
-def adapt(net, x, y, a, niter=50000, mu=None, sigma=None, coef=[1.0, 0.1, 1.0]):
+def ttt_adapt(net, x, y, a, niter=50000, mu=None, sigma=None, coef=[1.0, 0.1, 1.0]):
     # adapt model at test time
     criterion_ssl = nn.BCEWithLogitsLoss()
     lr = 1e-3
@@ -85,3 +87,66 @@ def adapt(net, x, y, a, niter=50000, mu=None, sigma=None, coef=[1.0, 0.1, 1.0]):
                 break
 
     return acc_main_best, net_bkp
+
+def tent_adapt(net, x, y, a, niter=50000):
+    # adapt model at test time
+    lr = 1e-3
+    optimizer = optim.Adam(net.parameters(), lr=lr)
+    tent_model = tent.Tent(net, optimizer)
+    acc_best = 0
+    for i in range(niter):
+
+        outputs = tent_model(x)
+        # save best result
+        if i % 5 == 0:
+            acc, _ = test(tent_model.model, x, y, a)
+            if acc_best <= acc:
+                acc_best = acc
+                net_bkp = copy.deepcopy(net.state_dict())
+
+    return acc, net_bkp
+
+def shot_adapt(net, x, y, a, niter=50000):
+    ext = net.encoder
+    classifier = net.cls
+    # adapt model at test time
+    lr = 1e-3
+    cls_par = 1e-3
+    optimizer = optim.Adam(net.parameters(), lr=lr)
+
+    acc_best = 0
+
+    for i in range(niter):
+        ext.eval()
+        mem_label = obtain_shot_label(x, ext, classifier)
+        mem_label = torch.from_numpy(mem_label)
+        ext.train()
+        optimizer.zero_grad()
+        classifier_loss = 0
+
+        features_test = ext(x)
+        outputs_test = classifier(features_test)
+
+        classifier_loss = cls_par * nn.BCEWithLogitsLoss()(outputs_test, mem_label.unsqueeze(1).float())
+
+        sigmoid_out = torch.sigmoid(outputs_test)
+        entropy_loss = torch.mean(Entropy(sigmoid_out))
+        msigmoid = sigmoid_out.mean(dim=0)
+        entropy_loss -= torch.sum(-msigmoid * torch.log(msigmoid + 1e-5))
+
+        im_loss = entropy_loss
+        classifier_loss += im_loss
+
+        optimizer.zero_grad()
+        classifier_loss.backward()
+        optimizer.step()
+
+        # save best result
+        if i % 5 == 0:
+            acc, _ = test(net, x, y, a)
+            if acc_best <= acc:
+                acc_best = acc
+                net_bkp = copy.deepcopy(net.state_dict())
+
+    return acc_best, net_bkp
+
