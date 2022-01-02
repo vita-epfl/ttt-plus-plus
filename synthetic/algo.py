@@ -93,6 +93,7 @@ def tent_adapt(net, x, y, a, niter=50000):
     lr = 1e-3
     optimizer = optim.Adam(net.parameters(), lr=lr)
     acc_best, _ = test(net, x, y, a)
+    net_bkp = copy.deepcopy(net.state_dict())
     tent_model = tent.Tent(net, optimizer)
 
     for i in range(niter):
@@ -115,6 +116,7 @@ def shot_adapt(net, x, y, a, niter=50000):
     cls_par = 1e-3
     optimizer = optim.Adam(net.parameters(), lr=lr)
     acc_best, _ = test(net, x, y, a)
+    net_bkp = copy.deepcopy(net.state_dict())
 
     for i in range(niter):
         ext.eval()
