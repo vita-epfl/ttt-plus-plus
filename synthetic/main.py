@@ -15,13 +15,13 @@ def parse_arguments():
     parser.add_argument('--rot', default=50, type=float)
     parser.add_argument('--tran', default=1.0, type=float)
     parser.add_argument('--sep', default=-0.5, type=float)
-    parser.add_argument('--figdir', default='docs', type=str)
-    parser.add_argument('--compare_tent_shot', default=True, type=str)
+    parser.add_argument('--figdir', default=None, type=str)
+    parser.add_argument('--compare_tent_shot', default=False, type=str)
     args = parser.parse_args()
     return args
 
 
-def run_experiment(rot, tran, sep, figdir=None, seed=2021):
+def run_experiment(rot, tran, sep, figdir=None, seed=2021, compare_tent_shot=False):
     torch.manual_seed(seed)
     np.random.seed(seed)
 
@@ -66,7 +66,8 @@ def run_experiment(rot, tran, sep, figdir=None, seed=2021):
     with torch.no_grad():
         _, _, z_s = net(input_s)
         mu, sigma = algo.summarize(z_s)
-    if args.compare_tent_shot == False:
+    
+    if compare_tent_shot == False:
         # Explore the effects of Task Relation and Domain shift on TTT and TTT++
         result[0:5] = [tran, rot, sep, corr.item(), acc[0].item()]
         # TTT
@@ -144,4 +145,4 @@ def run_experiment(rot, tran, sep, figdir=None, seed=2021):
 
 if __name__ == "__main__":
     args = parse_arguments()
-    run_experiment(args.rot, args.tran, args.sep, args.figdir)
+    run_experiment(args.rot, args.tran, args.sep, args.figdir, seed=2021, compare_tent_shot=args.compare_tent_shot)

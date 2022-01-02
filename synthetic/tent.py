@@ -53,7 +53,7 @@ def forward_and_adapt(x, model, optimizer):
 
     Measure entropy of the model prediction, take gradients, and update params.
     """
-    model.train()
+    # model.train()
     # forward
     outputs, _, _ = model(x)
     # adapt
