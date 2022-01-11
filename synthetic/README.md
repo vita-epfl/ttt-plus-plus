@@ -19,7 +19,7 @@ python main.py
 
 To visualize the results, run the following line:
 ```
-python main.py --figdir='docs'
+python main.py --figdir=docs
 ```
 
 ## Sample Results
