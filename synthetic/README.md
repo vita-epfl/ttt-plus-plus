@@ -19,16 +19,16 @@ python main.py
 
 To visualize the results, run the following line:
 ```
-python main.py --figdir='figures'
+python main.py --figdir=docs
 ```
 
 ## Sample Results
 
 ### Quantitative
 
-| Model      |   IID    |  Test    |  Vanilla TTT   |   Our TTT++   |
-|:----------:|:--------:|:--------:|:--------------:|:-------------:|
-| Accuracy   |  100.0%  |  50.0%   |     50.0%      |     88.2%     |
+| Model      |   IID    |  Test    |  Vanilla TTT   |   Our TTT++   |      TENT     |      SHOT     |
+|:----------:|:--------:|:--------:|:--------------:|:-------------:|:-------------:|:-------------:|
+| Accuracy   |  100.0%  |  50.0%   |     50.0%      |     88.2%     |      50%      |     67.8%     |
 
 ### Qualitative
 
