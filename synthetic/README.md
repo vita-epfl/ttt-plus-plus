@@ -32,9 +32,9 @@ python main.py --figdir=docs
 
 ### Qualitative
 
-|      IID      |      Test     |  Vanilla TTT  |   Our TTT++   |
-|:-------------:|:-------------:|:-------------:|:-------------:|
-![](docs/source_test.png) | ![](docs/target_test.png) | ![](docs/target_ttt.png) | ![](docs/target_ttt++.png) |
+|      IID      |      Test     |  Vanilla TTT  |   Our TTT++   |      TENT     |      SHOT     |
+|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+![](docs/source_test.png) | ![](docs/target_test.png) | ![](docs/target_ttt.png) | ![](docs/target_ttt++.png) | ![](docs/target_tent.png) | ![](docs/target_shot.png) |
 
 ## Other Settings
 
