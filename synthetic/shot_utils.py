@@ -9,8 +9,8 @@ def obtain_shot_label(inputs, ext, classifier):
         outputs = classifier(feas)
         all_fea = feas.float()
         all_output = outputs.float()
-    all_output = nn.Softmax(dim=1)(all_output)
-    _, predict = torch.max(all_output, 1)
+    all_output = torch.sigmoid(all_output)
+    all_output = torch.cat((1-all_output, all_output), 1)
 
     all_fea = torch.cat((all_fea, torch.ones(all_fea.size(0), 1)), 1)
     all_fea = (all_fea.t() / torch.norm(all_fea, p=2, dim=1)).t()
@@ -29,13 +29,11 @@ def obtain_shot_label(inputs, ext, classifier):
         initc = initc / (1e-8 + aff.sum(axis=0)[:, None])
         dd = cdist(all_fea, initc, 'cosine')
         pred_label = dd.argmin(axis=1)
-
     return pred_label.astype('int')
 
 def Entropy(input_):
-    bs = input_.size(0)
-    entropy = -input_ * torch.log(input_ + 1e-5)
-    entropy = torch.sum(entropy, dim=1)
+    # binary entropy
+    entropy = -input_ * torch.log(input_ + 1e-5) - (1 - input_) * torch.log(1 - input_ + 1e-5)
     return entropy
 
 def configure_model(net):

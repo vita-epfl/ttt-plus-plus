@@ -43,7 +43,7 @@ class Tent(nn.Module):
 def sigmoid_entropy(x: torch.Tensor) -> torch.Tensor:
     """Entropy of sigmoid distribution from logits."""
     p = torch.sigmoid(x)
-    entropy = -(p * torch.log(p))
+    entropy = -p * torch.log(p + 1e-5) - (1-p) * torch.log(1 - p + 1e-5)
     return entropy
 
 
