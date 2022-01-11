@@ -2,7 +2,7 @@
 import time
 import numpy as np
 import pandas as pd
-import main as main
+import main
 
 start = time.time()
 Results = np.zeros((9 * 5 * 6, 12))
