@@ -26,15 +26,15 @@ python main.py --figdir=docs
 
 ### Quantitative
 
-| Model      |   IID    |  Test    |  Vanilla TTT   |   Our TTT++   |      TENT     |      SHOT     |
+| Model      |   IID    |  Test    |  Vanilla TTT   |      TENT     |      SHOT     |   Our TTT++   |
 |:----------:|:--------:|:--------:|:--------------:|:-------------:|:-------------:|:-------------:|
-| Accuracy   |  100.0%  |  50.0%   |     50.0%      |     88.2%     |      50%      |     67.8%     |
+| Accuracy   |  100.0%  |  50.0%   |     50.0%      |      50%      |     67.8%     |     88.2%     |
 
 ### Qualitative
 
-|      IID      |      Test     |  Vanilla TTT  |   Our TTT++   |      TENT     |      SHOT     |
+|      IID      |      Test     |  Vanilla TTT  |      TENT     |      SHOT     |   Our TTT++   |
 |:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
-![](docs/source_test.png) | ![](docs/target_test.png) | ![](docs/target_ttt.png) | ![](docs/target_ttt++.png) | ![](docs/target_tent.png) | ![](docs/target_shot.png) |
+![](docs/source_test.png) | ![](docs/target_test.png) | ![](docs/target_ttt.png) | ![](docs/target_tent.png) | ![](docs/target_shot.png) | ![](docs/target_ttt++.png) |
 
 ## Other Settings
 
