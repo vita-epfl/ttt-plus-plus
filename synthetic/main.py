@@ -8,7 +8,7 @@ import algo
 import model
 import dataset
 import visualize
-from shot_utils import configure_model
+from shot import configure_model
 
 def parse_arguments():
     parser = argparse.ArgumentParser()

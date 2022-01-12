@@ -4,8 +4,8 @@ import torch
 from torch import optim
 from torch import nn
 import tent
-from shot_utils import Entropy
-from shot_utils import obtain_shot_label
+from shot import Entropy
+from shot import obtain_shot_label
 from discrepancy import covariance, coral, linear_mmd
 
 
