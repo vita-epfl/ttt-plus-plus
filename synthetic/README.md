@@ -50,4 +50,5 @@ To recurrent the results shown in the report, run experiments by the following l
 python experiment.py
 ```
 The performance of the four methods under various domain shift:
+
 ![](docs/moon_shift.png)
