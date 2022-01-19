@@ -45,10 +45,8 @@ The detailed problem setting can be controlled as follows:
 python main.py --tran=<translation> --rot=<rotation> --sep=<distance>
 ```
 
-To recurrent the results shown in the report, run experiments by the following line:
+To recurrent the results shown in the report, run the following line:
 ```
 python experiment.py
 ```
-The performance of the four methods under various domain shift:
 
-![](docs/moon_shift.png)
