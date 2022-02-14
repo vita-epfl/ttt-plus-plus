@@ -23,7 +23,7 @@ tar -xvf CIFAR-100-C.tar
 
 ### Pre-trained Models
 
-The checkpoint of the pre-train Resnet-50 can be downloaded (214MB) using the following command: 
+The checkpoints of pre-train Resnet-50 can be downloaded (214MB) using the following command: 
 
 ```bash
 mkdir -p results/cifar10_joint_resnet50 && cd results/cifar10_joint_resnet50
@@ -31,6 +31,8 @@ gdown https://drive.google.com/uc?id=1TWiFJY_q5uKvNr9x3Z4CiK2w9Giqk9Dx && cd ../
 mkdir -p results/cifar100_joint_resnet50 && cd results/cifar100_joint_resnet50
 gdown https://drive.google.com/uc?id=1-8KNUXXVzJIPvao-GxMp2DiArYU9NBRs && cd ../..
 ```
+
+These models are obtained by training on the clean CIFAR10/100 images using [semi-supervised SimCLR](https://github.com/YuejiangLIU/semi-simclr).
 
 ### Test-time Adaptation
 
