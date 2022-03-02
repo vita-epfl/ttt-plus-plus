@@ -19,22 +19,22 @@ python main.py
 
 To visualize the results, run the following line:
 ```
-python main.py --figdir='figures'
+python main.py --figdir=docs
 ```
 
 ## Sample Results
 
 ### Quantitative
 
-| Model      |   IID    |  Test    |  Vanilla TTT   |   Our TTT++   |
-|:----------:|:--------:|:--------:|:--------------:|:-------------:|
-| Accuracy   |  100.0%  |  50.0%   |     50.0%      |     88.2%     |
+| Model      |   IID    |  Test    |  Vanilla TTT   |      TENT     |      SHOT     |   Our TTT++   |
+|:----------:|:--------:|:--------:|:--------------:|:-------------:|:-------------:|:-------------:|
+| Accuracy   |  100.0%  |  50.0%   |     50.0%      |      50%      |     67.8%     |     88.2%     |
 
 ### Qualitative
 
-|      IID      |      Test     |  Vanilla TTT  |   Our TTT++   |
-|:-------------:|:-------------:|:-------------:|:-------------:|
-![](docs/source_test.png) | ![](docs/target_test.png) | ![](docs/target_ttt.png) | ![](docs/target_ttt++.png) |
+|      IID      |      Test     |  Vanilla TTT  |      TENT     |      SHOT     |   Our TTT++   |
+|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+![](docs/source_test.png) | ![](docs/target_test.png) | ![](docs/target_ttt.png) | ![](docs/target_tent.png) | ![](docs/target_shot.png) | ![](docs/target_ttt++.png) |
 
 ## Other Settings
 
@@ -44,3 +44,9 @@ The detailed problem setting can be controlled as follows:
 ```
 python main.py --tran=<translation> --rot=<rotation> --sep=<distance>
 ```
+
+To recurrent the results shown in the report, run the following line:
+```
+python experiment.py
+```
+

@@ -3,7 +3,9 @@ import copy
 import torch
 from torch import optim
 from torch import nn
-
+import tent
+from shot import Entropy
+from shot import obtain_shot_label
 from discrepancy import covariance, coral, linear_mmd
 
 
@@ -46,15 +48,14 @@ def summarize(z):
     return mu, sigma
 
 
-def adapt(net, x, y, a, niter=50000, mu=None, sigma=None, coef=[1.0, 0.1, 1.0]):
+def ttt_adapt(net, x, y, a, niter=50000, mu=None, sigma=None, coef=[1.0, 0.1, 1.0]):
     # adapt model at test time
     criterion_ssl = nn.BCEWithLogitsLoss()
     lr = 1e-3
     optimizer = optim.Adam(net.parameters(), lr=lr)
 
-    acc_main_best = 0.0
-    acc_main_ema = 0.0
-    acc_ssl_ema = 1.0
+    acc_best, _ = test(net, x, y, a)
+    net_bkp = copy.deepcopy(net.state_dict())
 
     for i in range(niter):
         _, os, z = net(x)
@@ -73,15 +74,117 @@ def adapt(net, x, y, a, niter=50000, mu=None, sigma=None, coef=[1.0, 0.1, 1.0]):
 
         # save best result
         if i % 5 == 0:
-            acc = test(net, x, y, a)
-            acc_main_ema = acc_main_ema * 0.9 + acc[0] * 0.1
-            acc_ssl_ema = acc_ssl_ema * 0.9 + acc[1] * 0.1
-            if acc_main_best <= acc[0]:
-                acc_main_best = acc[0]
+            acc, _ = test(net, x, y, a)
+            if acc_best <= acc:
+                acc_best = acc
                 net_bkp = copy.deepcopy(net.state_dict())
 
-            # termination condition
-            if acc[0] > 0.999 or (acc[0] < acc_main_ema and acc[1] > acc_ssl_ema):
-                break
 
-    return acc_main_best, net_bkp
+    return acc_best, net_bkp
+
+def tent_adapt(net, x, y, a, niter=50000):
+    # adapt model at test time
+    lr = 1e-3
+    optimizer = optim.Adam(net.parameters(), lr=lr)
+    acc_best, _ = test(net, x, y, a)
+    net_bkp = copy.deepcopy(net.state_dict())
+    tent_model = tent.Tent(net, optimizer)
+
+    for i in range(niter):
+
+        outputs = tent_model(x)
+        # save best result
+        if i % 5 == 0:
+            acc, _ = test(tent_model.model, x, y, a)
+            if acc_best <= acc:
+                acc_best = acc
+                net_bkp = copy.deepcopy(net.state_dict())
+
+    return acc_best, net_bkp
+
+def shot_adapt(net, x, y, a, niter=50000, coef=[1.0, 1.0, 1e-3]):
+    ext = net.encoder
+    classifier = net.cls
+    # adapt model at test time
+    lr = 1e-3
+    cls_par = coef[2]
+    optimizer = optim.Adam(net.parameters(), lr=lr)
+    acc_best, _ = test(net, x, y, a)
+    net_bkp = copy.deepcopy(net.state_dict())
+
+    for i in range(niter):
+        ext.eval()
+        mem_label = obtain_shot_label(x, ext, classifier)
+        mem_label = torch.from_numpy(mem_label)
+        ext.train()
+        optimizer.zero_grad()
+        classifier_loss = 0
+
+        features_test = ext(x)
+        outputs_test = classifier(features_test)
+
+        classifier_loss = cls_par * nn.BCEWithLogitsLoss()(outputs_test, mem_label.unsqueeze(1).float())
+
+        sigmoid_out = torch.sigmoid(outputs_test)
+        entropy_loss = coef[0]*torch.mean(Entropy(sigmoid_out))
+        msigmoid = torch.mean(sigmoid_out)  # p_hat
+        entropy_loss -= coef[1]*Entropy(msigmoid)
+
+        im_loss = entropy_loss
+        classifier_loss += im_loss
+
+        optimizer.zero_grad()
+        classifier_loss.backward()
+        optimizer.step()
+
+        # save best result
+        if i % 5 == 0:
+            acc, _ = test(net, x, y, a)
+            if acc_best <= acc:
+                acc_best = acc
+                net_bkp = copy.deepcopy(net.state_dict())
+
+    return acc_best, net_bkp
+
+def psefa_adapt(net, x, y, a, niter=50000, mu=None, sigma=None, coef=[1e-3, 0.1, 1.0]):
+    ext = net.encoder
+    classifier = net.cls
+    # adapt model at test time
+    lr = 1e-3
+    optimizer = optim.Adam(net.parameters(), lr=lr)
+    acc_best, _ = test(net, x, y, a)
+    net_bkp = copy.deepcopy(net.state_dict())
+
+    for i in range(niter):
+        ext.eval()
+        # psedo labelling
+        mem_label = obtain_shot_label(x, ext, classifier)
+        mem_label = torch.from_numpy(mem_label)
+        ext.train()
+        optimizer.zero_grad()
+
+        features_test = ext(x)
+        outputs_test = classifier(features_test)
+
+        loss = coef[0] * nn.BCEWithLogitsLoss()(outputs_test, mem_label.unsqueeze(1).float())
+
+        # feature alignment
+        _, _, z = net(x)
+
+        loss_mean = linear_mmd(z.mean(axis=0), mu)
+        loss_coral = coral(covariance(z), sigma)
+
+        loss += loss_mean * coef[1] + loss_coral * coef[2]
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # save best result
+        if i % 5 == 0:
+            acc, _ = test(net, x, y, a)
+            if acc_best <= acc:
+                acc_best = acc
+                net_bkp = copy.deepcopy(net.state_dict())
+
+    return acc_best, net_bkp
